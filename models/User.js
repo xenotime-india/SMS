@@ -15,6 +15,8 @@ var User = new keystone.List('User', {
 
 var deps = {
 	mentoring: { 'mentoring.available': true },
+
+	github: { 'services.github.isConfigured': true },
 	facebook: { 'services.facebook.isConfigured': true },
 	google: { 'services.google.isConfigured': true },
 	twitter: { 'services.twitter.isConfigured': true }
@@ -31,6 +33,7 @@ User.add({
     isGroup: Boolean,
 	organisation: { type: Types.Relationship, ref: 'Organisation' },
 	photo: { type: Types.CloudinaryImage },
+	github: { type: String, width: 'short' },
 	twitter: { type: String, width: 'short' },
 	website: { type: Types.Url },
 	bio: { type: Types.Markdown },
@@ -50,10 +53,21 @@ User.add({
 		want: { type: String, label: 'Wants...', dependsOn: deps.mentoring }
 	}
 }, 'Permissions', {
-	isAdmin: { type: Boolean, label: 'Can Admin RWA' },
+	isAdmin: { type: Boolean, label: 'Can Admin SydJS' },
 	isVerified: { type: Boolean, label: 'Has a verified email address' }
 }, 'Services', {
 	services: {
+		github: {
+			isConfigured: { type: Boolean, label: 'GitHub has been authenticated' },
+
+			profileId: { type: String, label: 'Profile ID', dependsOn: deps.github },
+
+			username: { type: String, label: 'Username', dependsOn: deps.github },
+			avatar: { type: String, label: 'Image', dependsOn: deps.github },
+
+			accessToken: { type: String, label: 'Access Token', dependsOn: deps.github },
+			refreshToken: { type: String, label: 'Refresh Token', dependsOn: deps.github }
+		},
 		facebook: {
 			isConfigured: { type: Boolean, label: 'Facebook has been authenticated' },
 
@@ -162,6 +176,7 @@ User.schema.virtual('canAccessKeystone').get(function() {
 // Pull out avatar image
 User.schema.virtual('avatarUrl').get(function() {
 	if (this.photo.exists) return this._.photo.thumbnail(120,120);
+	if (this.services.github.isConfigured && this.services.github.avatar) return this.services.github.avatar;
 	if (this.services.facebook.isConfigured && this.services.facebook.avatar) return this.services.facebook.avatar;
 	if (this.services.google.isConfigured && this.services.google.avatar) return this.services.google.avatar;
 	if (this.services.twitter.isConfigured && this.services.twitter.avatar) return this.services.twitter.avatar;
@@ -171,6 +186,9 @@ User.schema.virtual('avatarUrl').get(function() {
 // Usernames
 User.schema.virtual('twitterUsername').get(function() {
 	return (this.services.twitter && this.services.twitter.isConfigured) ? this.services.twitter.username : '';
+});
+User.schema.virtual('githubUsername').get(function() {
+	return (this.services.github && this.services.github.isConfigured) ? this.services.github.username : '';
 });
 
 
@@ -187,11 +205,11 @@ User.schema.methods.resetPassword = function(callback) {
 		new keystone.Email('forgotten-password').send({
 			user: user,
 			link: '/reset-password/' + user.resetPasswordKey,
-			subject: 'Reset your RWA Password',
+			subject: 'Reset your SydJS Password',
 			to: user.email,
 			from: {
-				name: 'RWA',
-				email: 'contact@rwa.com'
+				name: 'SydJS',
+				email: 'contact@sydjs.com'
 			}
 		}, callback);
 	});
