@@ -46,6 +46,7 @@ keystone.init({
 
 	'google api key': process.env.GOOGLE_BROWSER_KEY,
 	'google server api key': process.env.GOOGLE_SERVER_KEY,
+	'default region': 'hi',
 
 	'ga property': process.env.GA_PROPERTY,
 	'ga domain': process.env.GA_DOMAIN,
