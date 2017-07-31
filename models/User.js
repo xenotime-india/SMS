@@ -190,7 +190,7 @@ User.schema.methods.resetPassword = function(callback) {
 			subject: 'Reset your RWA Password',
 			to: user.email,
 			from: {
-				name: 'SydJS',
+				name: 'RWA',
 				email: 'contact@rwa.com'
 			}
 		}, callback);
