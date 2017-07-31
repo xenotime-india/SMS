@@ -5,7 +5,8 @@ header(id='header', role='banner', class=(section == 'home' ? 'header--home' : '
 		.navbar-header
 			a(href='/', title='Back to Home').site-branding
 				//- include /public/images/logo.svg
-				img(src='/images/logo.png', alt='RWA logo', id='squared', style='background-color:#f0db4f')
+				h2#logo #[em RWA] Manglam Aananda
+				//- img(src='/images/logo.png', alt='RWA logo', id='squared', style='background-color:#f0db4f')
 			//- User avatar
 			if user
 				a(href='/me').user.hidden-md.hidden-lg
